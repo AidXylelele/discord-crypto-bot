@@ -1,0 +1,21 @@
+{
+  "type": "commonjs",
+  "name": "discord-crypto-bot",
+  "version": "1.0.0",
+  "description": "This bot helps the user to get up-to-date information about the requested cryptocurrency.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "knex": "^2.4.2",
+    "mysql2": "^3.4.2",
+    "nodemon": "^2.0.22",
+    "puppeteer": "^20.7.3"
+  }
+}
