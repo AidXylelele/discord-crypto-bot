@@ -1,17 +1,22 @@
-FROM node:14.18.1-alpine AS base
-WORKDIR /src
-COPY package*.json .
+FROM node:16
 
-FROM base AS dependencies
-RUN npm ci --only=production
-RUN cp -R node_modules prod_node_modules
+RUN apt-get update \
+ && apt-get install -y chromium \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends
+    
+USER node
+
+WORKDIR /app
+
+COPY --chown=node package.json .
+COPY --chown=node package-lock.json .
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
+
 RUN npm install
 
-FROM dependencies AS build
-COPY . .
+COPY --chown=node . .
 
-FROM base AS release
-COPY --from=dependencies /src/prod_node_modules ./node_modules
-COPY . .
-EXPOSE 8080
-CMD ["node", "index.js"]
+CMD [ "node", "src/index.js" ]
