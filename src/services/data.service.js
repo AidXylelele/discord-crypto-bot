@@ -20,8 +20,8 @@ class DataService {
     });
   }
 
-  getData() {
-    return this.db("currencies").select();
+  async getData() {
+    return await this.db("currencies").select();
   }
 
   setData() {

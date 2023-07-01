@@ -2,6 +2,7 @@ FROM node:16
 
 RUN apt-get update \
  && apt-get install -y chromium \
+    netcat\
     fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
     --no-install-recommends
     
@@ -18,5 +19,10 @@ ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 RUN npm install
 
 COPY --chown=node . .
+
+RUN chmod +x /app/src/db/scripts/migration.sh
+
+COPY --chown=node knexfile.js ./
+COPY --chown=node src/db/migrations ./
 
 CMD [ "node", "src/index.js" ]

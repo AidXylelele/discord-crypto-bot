@@ -8,6 +8,7 @@ services:
       - 8080:8080
     depends_on:
       - db
+    command: sh -c ./src/db/scripts/migration.sh
   db:
     image: mysql:latest
     restart: always
