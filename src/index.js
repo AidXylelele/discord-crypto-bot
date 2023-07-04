@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const cron = require("node-cron");
 const { currenciesService } = require("./services/currencies.service");
 const { apiWorkerQueue } = require("./queues/apiWorker.queue");
-const { CRYPTOS, WORKER_FILE } = require("./consts/app.consts");
+const { CRYPTOS, WORKER_FILE, TITLE, COLOR } = require("./consts/app.consts");
 
 const client = new Discord.Client({
   intents: [
@@ -26,7 +26,13 @@ client.on("messageCreate", async (msg) => {
 
   if (command === "!getData") {
     const data = await currenciesService.get();
-    msg.reply(JSON.stringify(data));
+    const embed = new Discord.MessageEmbed().setTitle(TITLE).setColor(COLOR);
+
+    for (const object of data) {
+      embed.addField(object.name, object.value);
+    }
+
+    msg.channel.send(embed);
   }
 });
 
