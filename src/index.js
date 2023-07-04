@@ -25,14 +25,14 @@ client.on("messageCreate", async (msg) => {
   const command = content[0];
 
   if (command === "!getData") {
-    const data = await currenciesService.get();
-    const embed = new Discord.MessageEmbed().setTitle(TITLE).setColor(COLOR);
+    const currencies = await currenciesService.getAll();
+    const embed = new Discord.EmbedBuilder().setTitle(TITLE).setColor(COLOR);
 
-    for (const object of data) {
-      embed.addField(object.name, object.value);
+    for (const { name, price } of currencies) {
+      embed.addFields({ name, value: price });
     }
 
-    msg.channel.send(embed);
+    msg.channel.send({ embeds: [embed] });
   }
 });
 

@@ -1,5 +1,9 @@
 FROM node:16
 
+RUN apt-get update \
+ && apt-get install -y netcat \
+    --no-install-recommends
+    
 USER node
 
 WORKDIR /app

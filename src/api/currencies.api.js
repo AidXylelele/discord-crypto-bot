@@ -1,4 +1,4 @@
-const binance = require("node-binance-api");
+const Binance = require("node-binance-api");
 const { CustomError } = require("../utils/customError.util");
 
 const config = {
@@ -6,9 +6,11 @@ const config = {
   APISECRET: process.env.APISECRET,
 };
 
+const binance = new Binance().options(config);
+
 class CurrenciesApi {
-  constructor(api, config) {
-    this.api = api.options(config);
+  constructor(api) {
+    this.api = api;
   }
 
   async get(cryptos) {
@@ -26,6 +28,6 @@ class CurrenciesApi {
   }
 }
 
-const currenciesApi = new CurrenciesApi(binance, config);
+const currenciesApi = new CurrenciesApi(binance);
 
 module.exports = { currenciesApi };

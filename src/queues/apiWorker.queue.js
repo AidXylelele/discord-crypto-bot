@@ -2,13 +2,14 @@ const { Worker } = require("node:worker_threads");
 const { currenciesService } = require("../services/currencies.service");
 const Queue = require("better-queue");
 
-const apiWorkerQueue = new Queue((input, _cb) => {
+const apiWorkerQueue = new Queue((input, cb) => {
   const { WORKER_FILE, CRYPTOS } = input;
 
   const worker = new Worker(WORKER_FILE, { workerData: CRYPTOS });
 
   worker.on("message", async (result) => {
     await currenciesService.upsert(result);
+    cb()
   });
 
   worker.on("error", (err) => {
