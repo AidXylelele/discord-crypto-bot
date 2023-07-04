@@ -1,34 +1,40 @@
 const config = require("../../knexfile");
-let knex = require("knex");
+const knex = require("knex");
 const { CustomError } = require("../utils/customError.util");
-
-knex = knex(config.development);
+const {
+  CURRENCIES_TABLE_NAME,
+  DB_ERROR,
+  CONFLICT_KEY,
+} = require("../consts/app.consts");
 
 class CurrenciesService {
-  constructor(knex) {
-    this.knex = knex;
-    this.dbName = "currencies";
+  constructor(connection, config) {
+    this.db = connection(config.development);
   }
 
-  async get() {
+  async getAll() {
     try {
-      const data = await this.knex(this.dbName).select();
-      return data;
+      return await this.db(CURRENCIES_TABLE_NAME).select();
     } catch (error) {
-      throw new CustomError(error.message, "Database Error");
+      throw new CustomError(error.message, DB_ERROR);
     }
   }
 
-  async set(array) {
+  async upsert(currencyArray) {
     try {
-      const promises = array.map((item) => this.knex(this.dbName).insert(item));
+      const promises = currencyArray.map((currency) =>
+        this.db(CURRENCIES_TABLE_NAME)
+          .insert({ ...currency })
+          .onConflict(CONFLICT_KEY)
+          .merge()
+      );
       return await Promise.all(promises);
     } catch (error) {
-      throw new CustomError(error.message, "Database Error");
+      throw new CustomError(error.message, DB_ERROR);
     }
   }
 }
 
-const currenciesService = new CurrenciesService(knex);
+const currenciesService = new CurrenciesService(knex, config);
 
 module.exports = { currenciesService };

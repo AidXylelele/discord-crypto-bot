@@ -2,8 +2,8 @@ require("dotenv").config();
 const Discord = require("discord.js");
 const cron = require("node-cron");
 const { currenciesService } = require("./services/currencies.service");
-const { parserQueue } = require("./queues/parser.queue");
-const { LINK, PATH } = require("./consts/parser.consts");
+const { apiWorkerQueue } = require("./queues/apiWorker.queue");
+const { CRYPTOS, WORKER_FILE } = require("./consts/app.consts");
 
 const client = new Discord.Client({
   intents: [
@@ -16,7 +16,7 @@ const client = new Discord.Client({
 client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   cron.schedule("* * * * * *", () => {
-    parserQueue.push({ LINK, PATH, process });
+    apiWorkerQueue.push({ CRYPTOS, WORKER_FILE, process });
   });
 });
 
