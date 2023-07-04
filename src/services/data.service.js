@@ -1,35 +1,25 @@
-const { Worker } = require("node:worker_threads");
 const config = require("../../knexfile");
-const { default: knex } = require("knex");
+let knex = require("knex");
 
-const LINK = "https://myfin.by/crypto-rates";
-const PATH = "./src/workers/parser.worker.js";
+knex = knex(config.development);
 
 class DataService {
-  constructor(config, path, link, Worker) {
-    this.db = knex(config.development);
-    this.path = path;
-    this.link = link;
-    this.worker = new Worker(path, { workerData: link });
-  }
-
-  _getDataFromWorker() {
-    return new Promise((resolve, reject) => {
-      this.worker.on("message", resolve);
-      this.worker.on("error", reject);
-    });
+  constructor(knex) {
+    this.knex = knex;
+    this.dbName = "currencies";
   }
 
   async getData() {
-    return await this.db("currencies").select();
+    return await this.knex(this.dbName).select();
   }
 
-  setData() {
-    const data = this._getDataFromWorker();
-    data.then((currs) => currs.forEach(this.db("currencies").insert));
+  async setData(array) {
+    console.log("SetData", array);
+    const promises = array.map((item) => this.knex(this.dbName).insert(item));
+    return await Promise.all(promises);
   }
 }
 
-const dataService = new DataService(config, PATH, LINK, Worker);
+const dataService = new DataService(knex);
 
 module.exports = { dataService };

@@ -2,6 +2,7 @@ require("dotenv").config();
 const Discord = require("discord.js");
 const cron = require("node-cron");
 const { dataService } = require("./services/data.service");
+const { taskQueue, LINK } = require("./utils/workerCreator.utils");
 
 const client = new Discord.Client({
   intents: [
@@ -13,7 +14,9 @@ const client = new Discord.Client({
 
 client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  cron.schedule("* * * * *", dataService.setData);
+  cron.schedule("* * * * * *",  () => {
+    taskQueue.push(LINK)
+  });
 });
 
 client.on("messageCreate", async (msg) => {
