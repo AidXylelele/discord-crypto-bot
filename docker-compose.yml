@@ -9,6 +9,9 @@ services:
     depends_on:
       - db
     command: sh -c ./src/db/scripts/migration.sh
+    dns: 
+      - 8.8.8.8
+      - 8.8.4.4
   db:
     image: mysql:latest
     restart: always
